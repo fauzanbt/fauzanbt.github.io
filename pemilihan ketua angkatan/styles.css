@@ -1,0 +1,156 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+body {
+  max-width: 900px;
+  margin: 28px auto;
+  padding: 20px;
+  background: #f7f8fb;
+  color: #111;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(20,24,40,0.06);
+}
+
+form {
+  display: grid;
+  gap: 12px;
+}
+
+label {
+  font-size: 13px;
+}
+
+input[type=text], 
+input[type=number] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d7dbe7;
+}
+
+.radios {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.candidate {
+  flex: 1;
+  min-width: 180px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #e8ebf3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.candidate input {
+  transform: scale(1.1);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+button {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 0;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+button.ghost {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid #dbe7ff;
+}
+
+.notice {
+  font-size: 13px;
+  color: #334155;
+}
+
+.result {
+  margin-top: 14px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+}
+
+.center {
+  text-align: center;
+}
+
+.small {
+  font-size: 12px;
+  color: #475569;
+}
+
+/* Hover effects */
+button:hover {
+  opacity: 0.9;
+}
+
+button.ghost:hover {
+  background: #f1f5ff;
+}
+
+.candidate:hover {
+  border-color: #2563eb;
+  background: #f8faff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  body {
+    margin: 0;
+    padding: 16px;
+  }
+  
+  .radios {
+    flex-direction: column;
+  }
+  
+  .candidate {
+    min-width: auto;
+  }
+  
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .actions > * {
+    width: 100%;
+  }
+}
