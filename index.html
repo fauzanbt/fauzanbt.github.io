@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toko Teh Nusantara</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">🍃 Toko Teh Nusantara</div>
+    <nav class="menu">
+      <ul>
+        <li><a href="#produk">Produk</a></li>
+        <li><a href="#testimoni">Testimoni</a></li>
+        <li><a href="#kontak">Kontak</a></li>
+        <li><a href="index2.html">Tentang Kami</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Rasakan <span class="highlight">Ketenangan</span> dalam Setiap Seduhan</h1>
+      <p>Nikmati teh pilihan terbaik dari kebun Nusantara. Aroma alami, rasa khas, dan kualitas premium.</p>
+      <button class="cta-btn" onclick="bukaWhatsApp()">Pesan Sekarang</button>
+    </div>
+    <div class="hero-img">
+      <img src="https://i.ibb.co.com/Txw54hp6/uznbt-2.png" alt="Teh Nusantara">
+    </div>
+  </section>
+
+  <!-- Produk Section -->
+  <section id="produk" class="produk">
+    <h2>Varian Teh Unggulan</h2>
+    <div class="produk-container">
+      <div class="produk-card">
+        <img src="https://i.ibb.co.com/Txw54hp6/uznbt-2.png" alt="Teh Hijau">
+        <h3>Teh Hijau Premium</h3>
+        <p>Rasa segar dan lembut, cocok untuk relaksasi harian.</p>
+        <button onclick="tambahKeranjang('Teh Hijau Premium', 35000)">Tambah ke Keranjang</button>
+      </div>
+      <div class="produk-card">
+        <img src="https://i.ibb.co.com/Txw54hp6/uznbt-2.png" alt="Teh Hitam">
+        <h3>Teh Hitam Asli</h3>
+        <p>Wangi kuat dan berkarakter. Pilihan klasik pecinta teh.</p>
+        <button onclick="tambahKeranjang('Teh Hitam Asli', 30000)">Tambah ke Keranjang</button>
+      </div>
+      <div class="produk-card">
+        <img src="https://i.ibb.co.com/Txw54hp6/uznbt-2.png" alt="Teh Melati">
+        <h3>Teh Melati Wangi</h3>
+        <p>Perpaduan sempurna antara rasa lembut dan aroma bunga melati.</p>
+        <button onclick="tambahKeranjang('Teh Melati Wangi', 40000)">Tambah ke Keranjang</button>
+      </div>
+    </div>
+
+    <div class="keranjang">
+      <h3>🛒 Keranjang Belanja</h3>
+      <ul id="keranjang-list"></ul>
+      <p id="total">Total: Rp0</p>
+      <button class="checkout-btn" onclick="checkout()">Checkout</button>
+    </div>
+  </section>
+
+  <!-- Video Promosi -->
+<section id="video" class="video-section">
+  <h2>Video Promosi Kami 🍵</h2>
+  <div class="video-container">
+    <iframe width="560" height="315" 
+      src="https://www.youtube.com/embed/44HTmoV6b20" 
+      title="Video Promosi Toko Teh Nusantara"
+      frameborder="0" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+      allowfullscreen>
+    </iframe>
+  </div>
+</section>
+
+  <!-- Testimoni -->
+  <section id="testimoni" class="testimoni">
+    <h2>Kata Pelanggan Kami</h2>
+    <div class="testi active">“Teh terbaik yang pernah saya coba! Rasanya lembut dan alami.” – <b>Rani</b></div>
+    <div class="testi">“Pengiriman cepat, kemasan rapi, aromanya luar biasa.” – <b>Adi</b></div>
+    <div class="testi">“Suka banget sama Teh Melati-nya, bikin rileks setelah kerja.” – <b>Nina</b></div>
+  </section>
+
+  <!-- Kontak -->
+  <section id="kontak" class="kontak">
+    <h2>Hubungi Kami</h2>
+    <p>Email: <a href="mailto:support@tokotehnusantara.id">support@tokotehnusantara.id</a></p>
+    <p>WhatsApp: <a href="https://wa.me/6281234567890" target="_blank">+62 812 3456 7890</a></p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Toko Teh Nusantara. Semua hak dilindungi.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f9f6;
+  color: #2a2a2a;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+}
+
+.navbar .logo {
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: #276749;
+}
+
+.navbar ul {
+  display: flex;
+  list-style: none;
+  gap: 20px;
+}
+
+.navbar ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.navbar ul li a:hover {
+  color: #276749;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  padding: 60px 5%;
+}
+
+.hero-text {
+  max-width: 500px;
+}
+
+.hero-text h1 {
+  font-size: 2.2rem;
+  line-height: 1.4;
+}
+
+.highlight {
+  color: #276749;
+  font-weight: 600;
+}
+
+.cta-btn {
+  margin-top: 15px;
+  background: #276749;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.cta-btn:hover {
+  background: #1e5237;
+}
+
+.hero-img img {
+  width: 320px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* Produk */
+.produk {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.produk-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.produk-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  width: 250px;
+  padding: 15px;
+  transition: 0.3s;
+}
+
+.produk-card:hover {
+  transform: translateY(-5px);
+}
+
+.produk-card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.produk-card button {
+  background: #276749;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.keranjang {
+  margin-top: 40px;
+  background: #e9f5ec;
+  border-radius: 10px;
+  padding: 20px;
+  display: inline-block;
+}
+
+.checkout-btn {
+  background: #1e5237;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Keranjang list & remove button */
+.keranjang ul {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+  width: 320px;
+}
+.keranjang li {
+  background: #ffffff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.keranjang .item-name { flex: 1; font-weight: 600; }
+.keranjang .item-price { color: #276749; font-weight: 600; }
+.remove-btn {
+  background: transparent;
+  border: none;
+  color: #c53030;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.remove-btn:hover {
+  background: rgba(197, 48, 48, 0.08);
+}
+
+/* === VIDEO SECTION === */
+.video-section {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f3f7f4;
+}
+
+.video-section h2 {
+  margin-bottom: 20px;
+  color: #22543d;
+}
+
+.video-container {
+  display: flex;
+  justify-content: center;
+}
+
+.video-container iframe {
+  width: 90%;
+  max-width: 700px;
+  height: 400px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+/* Testimoni */
+.testimoni {
+  text-align: center;
+  background: #f3f7f4;
+  padding: 60px 20px;
+}
+
+.testi {
+  display: none;
+  font-style: italic;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.testi.active {
+  display: block;
+  animation: fade 1s;
+}
+
+@keyframes fade {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* Kontak */
+.kontak {
+  text-align: center;
+  background: #0f2418;
+  color: white;
+  padding: 60px 20px;
+}
+
+.kontak a {
+  color: #9ae6b4;
+  text-decoration: none;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.9rem;
+  background: #f8f9f6;
+}
+
+/* Utility container used by pages like Tentang Kami */
+.container {
+  padding: 60px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* active nav link */
+.menu ul li a.active {
+  color: #276749;
+  font-weight: 700;
+}
+
+/* shapes animation */
+.shapes-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* don't block clicks */
+  overflow: visible;
+  z-index: 9999;
+}
+.shape {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  opacity: 0.95;
+  transform: translate3d(0,0,0);
+  transition: transform 700ms cubic-bezier(.2,.8,.2,1), opacity 300ms ease;
+}
+.shape.small { width: 10px; height: 10px; }
+.shape.fade-out { opacity: 0; }
+
+/* Hero/banner for pages like Tentang Kami to match index hero style */
+.hero-banner {
+  width: 100%;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  z-index: 10; /* ensure banner sits below global shapes container */
+}
+.hero-banner::before {
+  /* decorative leaf image placed above the background image but below overlay and text */
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  /* use local image in project (place file at /img/daun.png) */
+  background-image: url('img/daun.png');
+  background-repeat: no-repeat;
+  background-position: right center; /* adjust as needed */
+  /* prefer fixed pixel size so leaf looks consistent; responsive rule below */
+  background-size: 300px auto;
+  opacity: 0.12; /* sedikit transparan agar tidak mengganggu teks */
+  pointer-events: none;
+  z-index: 0; /* sits above background but below overlay (::after z-index:1) and text (z-index:2) */
+}
+
+/* make leaf smaller on small screens so it won't crowd the hero text */
+@media (max-width: 680px) {
+  .hero-banner::before {
+    background-size: 120px auto;
+    background-position: right 6% center;
+    opacity: 0.10;
+  }
+}
+.hero-banner::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(15,36,24,0.45); /* subtle overlay */
+  z-index: 1; /* sits above background image but below text */
+}
+.hero-banner .hero-inner {
+  position: relative;
+  z-index: 2; /* text above overlay */
+  text-align: center;
+  padding: 40px 20px;
+}
+.hero-banner h1 {
+  font-size: 2.4rem;
+  margin: 0 0 8px 0;
+}
+.hero-banner p.lead {
+  max-width: 900px;
+  margin: 0 auto;
+  opacity: 0.95;
+}
+
+@media (min-width: 800px) {
+  .hero-banner { min-height: 360px; }
+  .hero-banner h1 { font-size: 3rem; }
+}
