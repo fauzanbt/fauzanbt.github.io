@@ -63,14 +63,44 @@ function checkout() {
 }
 
 let pendingTotal = 0;
+let baseTotal = 0;
+const DELIVERY_FEE = 10000; // ganti sesuai kebutuhan
+function updatePayAmountDisplay() {
+  const amtEl = document.getElementById('pay-amount');
+  const mode = document.querySelector('input[name="take-mode"]:checked')?.value || 'pickup';
+  const address = document.getElementById('delivery-address')?.value || '';
+  const fee = (mode === 'delivery') ? DELIVERY_FEE : 0;
+  pendingTotal = Number(baseTotal || 0) + fee;
 
+  if (amtEl) {
+    if (fee > 0) {
+      amtEl.textContent = `Total: Rp${Number(baseTotal).toLocaleString('id-ID')}  (+ Ongkir: Rp${fee.toLocaleString('id-ID')})  → Jumlah: Rp${pendingTotal.toLocaleString('id-ID')}`;
+    } else {
+      amtEl.textContent = `Total: Rp${Number(pendingTotal).toLocaleString('id-ID')}`;
+    }
+  }
+}
 function openPaymentModal(total) {
-  pendingTotal = total;
+  baseTotal = Number(total || 0);
+  // set default pendingTotal and update UI
+  pendingTotal = baseTotal;
+
   const modal = document.getElementById('payment-modal');
   const amt = document.getElementById('pay-amount');
   if (amt) amt.textContent = `Total: Rp${Number(total).toLocaleString('id-ID')}`;
-  const preview = document.getElementById('qris-preview');
-  if (preview) preview.style.display = 'none';
+
+  // ensure radio defaults and hide address input initially
+  const pickupRadio = document.querySelector('input[name="take-mode"][value="pickup"]');
+  const deliveryRadio = document.querySelector('input[name="take-mode"][value="delivery"]');
+  if (pickupRadio) pickupRadio.checked = true;
+  const addrWrap = document.getElementById('delivery-address-wrap');
+  if (addrWrap) addrWrap.style.display = 'none';
+  const addrInput = document.getElementById('delivery-address');
+  if (addrInput) addrInput.value = '';
+
+  // update display using helper
+  updatePayAmountDisplay();
+
   if (modal) {
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
@@ -86,22 +116,30 @@ function closePaymentModal() {
 }
 
 function showQRIS() {
-  // Prefer using a local QRIS image (img/qris.png) if you copied your merchant QR into the project's img/ folder.
-  // If the local image isn't available, fall back to a demo QR generated via Google Chart API.
   const img = document.getElementById('qris-img');
   const preview = document.getElementById('qris-preview');
   if (!img || !preview) return;
 
-  // Attempt to load local file first
-  const localPath = 'img/qris.png';
-  img.onload = () => { preview.style.display = 'block'; };
+  // Save order first
+  const mode = document.querySelector('input[name="take-mode"]:checked')?.value || 'pickup';
+  const address = (mode === 'delivery') ? (document.getElementById('delivery-address')?.value || '') : '';
+  const orderId = saveOrder(cart, pendingTotal, mode, address, 'qris');
+
+  // Attempt to load local file first (prefer qris.jpg); if missing generate EMV/QRIS payload and create QR.
+  const localPath = 'img/qris.jpg';
+  img.onload = () => {
+    preview.style.display = 'block';
+    
+    // Clear cart after successful QRIS display
+    cart = [];
+    pendingTotal = 0;
+    baseTotal = 0;
+    renderCart();
+  };
   img.onerror = () => {
-    // If local file missing, generate QR client-side using included QR library (qrcode.min.js)
-    // Build a simple payload including merchant NMID and amount. For production, replace with EMV payload.
-    const merchantName = 'UZNBT';
-    const nmid = 'ID1025446706679'; // replace with your real NMID if available
-    const amount = Number(pendingTotal || 0).toFixed(2);
-    const payload = `QRIS|MERCHANT:${merchantName}|NMID:${nmid}|AMOUNT:${amount}`;
+    // Build EMV/QRIS payload using template and the pending total (client-side).
+    const emv = buildEMVWithAmount(emvTemplate, pendingTotal || 0);
+
 
     // create temporary container for QR generator
     const tmp = document.createElement('div');
@@ -109,27 +147,27 @@ function showQRIS() {
     tmp.style.left = '-9999px';
     document.body.appendChild(tmp);
 
-    try {
-      // If QRCode constructor from qrcode.min.js exists, use it
-      if (window.QRCode) {
-        new QRCode(tmp, { text: payload, width: 300, height: 300 });
-        // QRCode library inserts an <img> or <canvas> inside tmp
+  try {
+      if (window.QRCode && emv) {
+        // qrcode.min.js expects an element and options ({text, width, height})
+        new QRCode(tmp, { text: emv, width: 300, height: 300 });
         const generatedImg = tmp.querySelector('img');
         if (generatedImg && generatedImg.src) {
           img.src = generatedImg.src;
         } else {
-          // try canvas
           const canvas = tmp.querySelector('canvas');
           if (canvas) img.src = canvas.toDataURL('image/png');
           else img.src = '';
         }
       } else {
-        // As a last resort, fallback to Google Chart API (shouldn't happen if library loaded)
+        // Fallback to Google Chart API using the EMV payload (or a simple placeholder if emv missing)
+        const payload = emv || `QRIS|AMOUNT:${Number(pendingTotal||0).toFixed(2)}`;
         const q = encodeURIComponent(payload);
         const size = 300;
         img.src = `https://chart.googleapis.com/chart?cht=qr&chs=${size}x${size}&chl=${q}`;
       }
     } catch (err) {
+      const payload = emv || `QRIS|AMOUNT:${Number(pendingTotal||0).toFixed(2)}`;
       const q = encodeURIComponent(payload);
       const size = 300;
       img.src = `https://chart.googleapis.com/chart?cht=qr&chs=${size}x${size}&chl=${q}`;
@@ -143,13 +181,133 @@ function showQRIS() {
   img.src = localPath;
 }
 
+// --- EMV/QRIS helper: build EMV payload with updated amount and CRC16 ---
+// If you have a full EMV template string (without or with CRC), this function will replace or insert tag 54 (amount)
+// and recompute the CRC (tag 63). Uses CRC-16/CCITT-FALSE.
+const emvTemplate = `00020101021126570011ID.DANA.WWW011893600915325013193002092501319300303UMI51440014ID.CO.QRIS.WWW0215ID10254467066790303UMI5204654053033605802ID5905UZNBT6008Karawang61054135263047920`;
+
+function buildEMVWithAmount(template, amountNumber) {
+  if (!template) return null;
+  // remove existing CRC (63..)
+  let body = template;
+  const crcTagIndex = body.indexOf('6304');
+  if (crcTagIndex !== -1 && body.length >= crcTagIndex + 8) {
+    body = body.slice(0, crcTagIndex); // remove crc tag and value
+  }
+
+  // format amount with 2 decimals, no thousands separator
+  const amt = Number(amountNumber || 0).toFixed(2);
+
+  // tag 54 handling: find '54' occurrence
+  const tag54 = '54';
+  const idx54 = body.indexOf(tag54);
+  if (idx54 !== -1) {
+    // read length (two chars) after tag
+    const lenStr = body.substr(idx54 + 2, 2);
+    const len = parseInt(lenStr, 10);
+    if (!isNaN(len)) {
+      const before = body.substr(0, idx54);
+      const after = body.substr(idx54 + 4 + len);
+      const newVal = amt;
+      const newLen = String(newVal.length).padStart(2, '0');
+      body = before + '54' + newLen + newVal + after;
+    } else {
+      // malformed length, just skip replacement
+    }
+  } else {
+    // insert before tag '58' if present, else append
+    const idx58 = body.indexOf('58');
+    const insertion = '54' + String(amt.length).padStart(2, '0') + amt;
+    if (idx58 !== -1) {
+      body = body.slice(0, idx58) + insertion + body.slice(idx58);
+    } else {
+      body = body + insertion;
+    }
+  }
+
+  // compute CRC16 on body + '6304'
+  const withCrcTag = body + '6304';
+  const crc = crc16_ccitt(withCrcTag);
+  const crcHex = crc.toString(16).toUpperCase().padStart(4, '0');
+  const final = withCrcTag + crcHex;
+  return final;
+}
+
+// CRC-16/CCITT-FALSE implementation
+function crc16_ccitt(str) {
+  // compute CRC over ASCII bytes of the input string
+  const polynomial = 0x1021;
+  let crc = 0xFFFF;
+  for (let i = 0; i < str.length; i++) {
+    crc ^= (str.charCodeAt(i) & 0xff) << 8;
+    for (let j = 0; j < 8; j++) {
+      if ((crc & 0x8000) !== 0) crc = ((crc << 1) & 0xffff) ^ polynomial;
+      else crc = (crc << 1) & 0xffff;
+    }
+  }
+  return crc & 0xffff;
+}
+
+// Save order to localStorage for admin panel
+function saveOrder(items, total, takeMode, address = '', paymentMethod = 'whatsapp') {
+  // Get existing orders or initialize
+  let orders = [];
+  try {
+    orders = JSON.parse(localStorage.getItem('orders')) || [];
+  } catch (e) {
+    orders = [];
+  }
+
+  // Create new order
+  const order = {
+    id: Date.now(), // use timestamp as ID
+    date: new Date().toISOString(),
+    items: items.map(i => ({ name: i.name, price: i.price })),
+    total: total,
+    takeMode: takeMode,
+    address: address,
+    status: 'pending',
+    paymentMethod: paymentMethod
+  };
+
+  // Add to start of array (newest first)
+  orders.unshift(order);
+  
+  // Save back to storage
+  localStorage.setItem('orders', JSON.stringify(orders));
+  
+  // Return order ID for reference
+  return order.id;
+}
+
 function payWithWhatsApp() {
-  // Build message from cart and open WA, then clear cart
   const total = pendingTotal || cart.reduce((s, it) => s + Number(it.price || 0), 0);
-  const pesan = cart.map(i => `${i.name} (Rp${Number(i.price).toLocaleString('id-ID')})`).join('%0A');
-  const waUrl = `https://wa.me/6281234567890?text=Halo%20saya%20ingin%20memesan:%0A${encodeURIComponent(pesan)}%0ATotal:%20Rp${total.toLocaleString('id-ID')}`;
+
+  const mode = document.querySelector('input[name="take-mode"]:checked')?.value || 'pickup';
+  const address = (mode === 'delivery') ? (document.getElementById('delivery-address')?.value || '') : '';
+  
+  // Save order first
+  const orderId = saveOrder(cart, total, mode, address, 'whatsapp');
+
+  const lines = [];
+  lines.push(`Halo saya ingin memesan (Order #${orderId}):`);
+  cart.forEach(i => lines.push(`${i.name} (Rp${Number(i.price).toLocaleString('id-ID')})`));
+  lines.push(`Total: Rp${Number(total).toLocaleString('id-ID')}`);
+
+  if (mode === 'delivery') {
+    lines.push('Metode: Delivery');
+    if (address) lines.push(`Alamat: ${address}`);
+  } else {
+    lines.push('Metode: Ambil di Tempat');
+  }
+
+  const message = lines.join('\n');
+  const waUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(message)}`;
+
   window.open(waUrl, '_blank');
   cart = [];
+  pendingTotal = 0;
+  baseTotal = 0;
   renderCart();
   closePaymentModal();
 }
