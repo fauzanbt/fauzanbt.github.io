@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pemilihan Ketua Angkatan</title> 
+  <style>
+    :root{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    body{max-width:900px;margin:28px auto;padding:20px;background:#f7f8fb;color:#111}
+    header{display:flex;align-items:center;gap:12px}
+    h1{font-size:20px;margin:0}
+    .card{background:white;padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(20,24,40,0.06)}
+    form{display:grid;gap:12px}
+    label{font-size:13px}
+    input[type=text], input[type=number]{width:100%;padding:10px;border-radius:8px;border:1px solid #d7dbe7}
+    .radios{display:flex;gap:12px;flex-wrap:wrap}
+    .candidate{flex:1;min-width:180px;padding:10px;border-radius:8px;border:1px solid #e8ebf3;display:flex;align-items:center;gap:10px}
+    .candidate input{transform:scale(1.1)}
+    .actions{display:flex;gap:8px;align-items:center}
+    button{padding:10px 14px;border-radius:8px;border:0;background:#2563eb;color:white;cursor:pointer}
+    button.ghost{background:transparent;color:#2563eb;border:1px solid #dbe7ff}
+    .notice{font-size:13px;color:#334155}
+    .result{margin-top:14px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid #f1f5f9;text-align:left}
+    .center{text-align:center}
+    .small{font-size:12px;color:#475569}
+  </style>
+</head>
+<body>
+  <header>
+    <div style="width:48px;height:48px;background:#eef2ff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#2563eb">FP</div>
+    <div>
+      <h1>Pemilihan Ketua Angkatan</h1>
+      <div class="small">Isi nama lengkap, NPM, lalu pilih salah satu calon.</div>
+    </div>
+  </header>
+
+  <main style="margin-top:18px">
+    <section class="card">
+      <form id="voteForm">
+        <div>
+          <label for="fullname">Nama Lengkap</label>
+          <input id="fullname" name="fullname" type="text" autocomplete="name" required placeholder="Contoh: Ahmad Budi" />
+        </div>
+
+        <div>
+          <label for="npm">NPM</label>
+          <input id="npm" name="npm" type="text" inputmode="numeric" pattern="\d+" required placeholder="Contoh: 2510631200000" />
+        </div>
+
+        <div>
+          <label>Pilih Calon</label>
+          <div class="radios">
+            <label class="candidate"><input type="radio" name="candidate" value="Calon A" required> <div><strong>Arga Raditya Pratama</strong><div class="small">AYTTA (Apapun yang Terjadi Tidak Apa)</div></div></label>
+            <label class="candidate"><input type="radio" name="candidate" value="Calon B"> <div><strong>Nazril Fisabilillah</strong><div class="small">SAJUTA (Sabar Jujur Tawakal)</div></div></label>
+            <label class="candidate"><input type="radio" name="candidate" value="Calon C"> <div><strong>Maulana Ramadan</strong><div class="small">AKSI (Anak Kampus Siap Inisiatif)</div></div></label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button type="submit">Kirim Suara</button>
+          <button type="button" id="clearBtn" class="ghost">Bersihkan</button>
+          <div style="margin-left:auto;font-size:13px;color:#64748b">Total suara: <span id="totalVotes">0</span></div>
+        </div>
+      </form>
+
+      <div class="result" id="resultArea" style="display:none">
+        <h3>Terima kasih — suara Anda telah direkam</h3>
+        <div id="submittedInfo" class="small"></div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:12px">
+      <h3>Rekap Suara</h3>
+      <table id="tallyTable">
+        <thead><tr><th>Calon</th><th class="center">Suara</th></tr></thead>
+        <tbody>
+          <tr><td>Calon A</td><td class="center" data-candidate="Calon A">0</td></tr>
+          <tr><td>Calon B</td><td class="center" data-candidate="Calon B">0</td></tr>
+          <tr><td>Calon C</td><td class="center" data-candidate="Calon C">0</td></tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+        <button id="showVoters">Tampilkan Daftar Pemilih</button>
+        <button id="resetVotes" class="ghost">Reset Suara (admin)</button>
+        <div style="margin-left:auto" class="small">Data disimpan di browser (localStorage)</div>
+      </div>
+
+      <div id="votersList" style="margin-top:12px;display:none">
+        <h4>Daftar Pemilih</h4>
+        <table id="votersTable">
+          <thead><tr><th>Nama</th><th>NPM</th><th>Memilih</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Simple client-side voting app that stores votes in localStorage.
+    const form = document.getElementById('voteForm');
+    const resultArea = document.getElementById('resultArea');
+    const submittedInfo = document.getElementById('submittedInfo');
+    const totalVotesEl = document.getElementById('totalVotes');
+    const tallyCells = document.querySelectorAll('[data-candidate]');
+    const votersTableBody = document.querySelector('#votersTable tbody');
+
+    const STORAGE_KEY = 'pemilihan_ketua_angkatan_v1';
+
+    function loadState(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return {counts:{'Calon A':0,'Calon B':0,'Calon C':0}, voters:[]};
+      try{ return JSON.parse(raw); }catch(e){ console.error('gagal parse storage', e); return {counts:{'Calon A':0,'Calon B':0,'Calon C':0}, voters:[]}; }
+    }
+
+    function saveState(state){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+    function updateUI(){
+      const state = loadState();
+      tallyCells.forEach(cell => {
+        const c = cell.getAttribute('data-candidate');
+        cell.textContent = state.counts[c] ?? 0;
+      });
+      const total = state.voters.length;
+      totalVotesEl.textContent = total;
+    }
+
+    function appendVoterRow(voter){
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${escapeHtml(voter.name)}</td><td>${escapeHtml(voter.npm)}</td><td>${escapeHtml(voter.candidate)}</td>`;
+      votersTableBody.appendChild(tr);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const name = (formData.get('fullname') || '').trim();
+      const npm = (formData.get('npm') || '').trim();
+      const candidate = formData.get('candidate');
+
+      if(!name || !npm || !candidate){ alert('Mohon isi semua field.'); return; }
+
+      // simple duplicate check: prevent same NPM voting twice
+      const state = loadState();
+      const already = state.voters.find(v => v.npm === npm);
+      if(already){
+        if(!confirm('NPM ini sudah pernah memilih. Apakah Anda ingin merekam suara kembali (akan tetap tercatat sebagai duplicate)?')){
+          return;
+        }
+      }
+
+      state.voters.push({name, npm, candidate, ts: new Date().toISOString()});
+      state.counts[candidate] = (state.counts[candidate] || 0) + 1;
+      saveState(state);
+
+      submittedInfo.textContent = `Nama: ${name} — NPM: ${npm} — Memilih: ${candidate}`;
+      resultArea.style.display = 'block';
+
+      // update UI
+      updateUI();
+      // append row to visible voters list if shown
+      if(document.getElementById('votersList').style.display !== 'none') appendVoterRow({name,npm,candidate});
+
+      form.reset();
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', ()=> form.reset());
+
+    document.getElementById('showVoters').addEventListener('click', ()=>{
+      const listDiv = document.getElementById('votersList');
+      if(listDiv.style.display === 'none' || listDiv.style.display === ''){
+        // populate
+        votersTableBody.innerHTML = '';
+        const state = loadState();
+        state.voters.forEach(v => appendVoterRow(v));
+        listDiv.style.display = 'block';
+      } else {
+        listDiv.style.display = 'none';
+      }
+    });
+
+    document.getElementById('resetVotes').addEventListener('click', ()=>{
+      if(!confirm('Reset akan menghapus semua data suara. Lanjutkan?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      updateUI();
+      votersTableBody.innerHTML = '';
+      document.getElementById('votersList').style.display = 'none';
+      alert('Data suara telah direset.');
+    });
+
+    // small helper to sanitize text nodes (very basic)
+    function escapeHtml(str){ return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // initialize
+    (function init(){
+      // ensure counts keys exist
+      const state = loadState();
+      state.counts = Object.assign({'Calon A':0,'Calon B':0,'Calon C':0}, state.counts || {});
+      saveState(state);
+      updateUI();
+    })();
+  </script>
+</body>
+</html>
+
+
