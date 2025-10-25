@@ -56,7 +56,7 @@
 
       <h3>Hubungi Kami</h3>
       <p>Email: <a href="mailto:support@tokotehnusantara.id">support@tokotehnusantara.id</a></p>
-      <p>WhatsApp: <a href="https://wa.me/6281234567890" target="_blank">+62 812 3456 7890</a></p>
+  <p>WhatsApp: <a href="https://wa.me/6281234567890" target="_blank">+62 812-3456-7890</a></p>
 
       <p style="margin-top:18px;">
         <a href="index.html"><button class="cta-btn">Kembali ke Beranda</button></a>
@@ -67,8 +67,26 @@
   <footer>
     <p>© 2025 Toko Teh Nusantara. Semua hak dilindungi.</p>
   </footer>
-</script>
+  <script src="qrcode.min.js"></script>
   <script src="script.js"></script>
+
+  <!-- Payment modal (QRIS / WhatsApp) -->
+  <div id="payment-modal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="pay-title">
+      <button class="modal-close" aria-label="Close" onclick="closePaymentModal()">✕</button>
+      <h3 id="pay-title">Pilih Metode Pembayaran</h3>
+      <p id="pay-amount"> </p>
+      <div class="payment-options">
+        <button class="btn-qris" onclick="showQRIS()">Bayar dengan QRIS</button>
+        <button class="btn-wa" onclick="payWithWhatsApp()">Bayar via WhatsApp</button>
+      </div>
+      <div class="qris-preview" id="qris-preview" style="display:none;">
+        <p>Scan QRIS berikut:</p>
+        <img id="qris-img" src="" alt="QRIS" />
+        <p style="font-size:0.9rem; opacity:0.8; margin-top:8px;">Tunjukkan QR ini kepada kasir atau scan dengan aplikasi pembayaran Anda.</p>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>

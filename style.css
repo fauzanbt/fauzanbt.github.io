@@ -344,3 +344,32 @@ footer {
   .hero-banner { min-height: 360px; }
   .hero-banner h1 { font-size: 3rem; }
 }
+
+/* Payment modal (QRIS / WhatsApp) */
+.modal {
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.45);
+  z-index: 10000;
+}
+.modal.open { display: flex; }
+.modal-content {
+  background: #fff;
+  padding: 18px;
+  border-radius: 10px;
+  max-width: 420px;
+  width: 92%;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.modal-content h3 { margin-top: 0; }
+.payment-options { display:flex; gap:10px; justify-content:center; margin:12px 0; }
+.payment-options button { flex:1; padding:10px 12px; border-radius:8px; border:none; cursor:pointer; }
+.btn-qris { background:#2f855a; color:white; }
+.btn-wa { background:#25D366; color:white; }
+.qris-preview { margin-top:12px; }
+.qris-preview img { width:220px; height:220px; border-radius:8px; box-shadow:0 6px 18px rgba(0,0,0,0.12); }
+.modal-close { position:absolute; right:12px; top:10px; background:transparent; border:none; font-size:1.2rem; cursor:pointer; }

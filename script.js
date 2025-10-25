@@ -58,13 +58,100 @@ function checkout() {
     return;
   }
   const total = cart.reduce((s, it) => s + Number(it.price || 0), 0);
-  // optional: open WhatsApp with order summary
+  // open payment modal to choose QRIS or WhatsApp
+  openPaymentModal(total);
+}
+
+let pendingTotal = 0;
+
+function openPaymentModal(total) {
+  pendingTotal = total;
+  const modal = document.getElementById('payment-modal');
+  const amt = document.getElementById('pay-amount');
+  if (amt) amt.textContent = `Total: Rp${Number(total).toLocaleString('id-ID')}`;
+  const preview = document.getElementById('qris-preview');
+  if (preview) preview.style.display = 'none';
+  if (modal) {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function closePaymentModal() {
+  const modal = document.getElementById('payment-modal');
+  if (modal) {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function showQRIS() {
+  // Prefer using a local QRIS image (img/qris.png) if you copied your merchant QR into the project's img/ folder.
+  // If the local image isn't available, fall back to a demo QR generated via Google Chart API.
+  const img = document.getElementById('qris-img');
+  const preview = document.getElementById('qris-preview');
+  if (!img || !preview) return;
+
+  // Attempt to load local file first
+  const localPath = 'img/qris.png';
+  img.onload = () => { preview.style.display = 'block'; };
+  img.onerror = () => {
+    // If local file missing, generate QR client-side using included QR library (qrcode.min.js)
+    // Build a simple payload including merchant NMID and amount. For production, replace with EMV payload.
+    const merchantName = 'UZNBT';
+    const nmid = 'ID1025446706679'; // replace with your real NMID if available
+    const amount = Number(pendingTotal || 0).toFixed(2);
+    const payload = `QRIS|MERCHANT:${merchantName}|NMID:${nmid}|AMOUNT:${amount}`;
+
+    // create temporary container for QR generator
+    const tmp = document.createElement('div');
+    tmp.style.position = 'absolute';
+    tmp.style.left = '-9999px';
+    document.body.appendChild(tmp);
+
+    try {
+      // If QRCode constructor from qrcode.min.js exists, use it
+      if (window.QRCode) {
+        new QRCode(tmp, { text: payload, width: 300, height: 300 });
+        // QRCode library inserts an <img> or <canvas> inside tmp
+        const generatedImg = tmp.querySelector('img');
+        if (generatedImg && generatedImg.src) {
+          img.src = generatedImg.src;
+        } else {
+          // try canvas
+          const canvas = tmp.querySelector('canvas');
+          if (canvas) img.src = canvas.toDataURL('image/png');
+          else img.src = '';
+        }
+      } else {
+        // As a last resort, fallback to Google Chart API (shouldn't happen if library loaded)
+        const q = encodeURIComponent(payload);
+        const size = 300;
+        img.src = `https://chart.googleapis.com/chart?cht=qr&chs=${size}x${size}&chl=${q}`;
+      }
+    } catch (err) {
+      const q = encodeURIComponent(payload);
+      const size = 300;
+      img.src = `https://chart.googleapis.com/chart?cht=qr&chs=${size}x${size}&chl=${q}`;
+    } finally {
+      preview.style.display = 'block';
+      if (tmp && tmp.parentNode) tmp.parentNode.removeChild(tmp);
+    }
+  };
+
+  // start by setting local path; if it exists it will show, otherwise onerror will trigger client-side generation
+  img.src = localPath;
+}
+
+function payWithWhatsApp() {
+  // Build message from cart and open WA, then clear cart
+  const total = pendingTotal || cart.reduce((s, it) => s + Number(it.price || 0), 0);
   const pesan = cart.map(i => `${i.name} (Rp${Number(i.price).toLocaleString('id-ID')})`).join('%0A');
   const waUrl = `https://wa.me/6281234567890?text=Halo%20saya%20ingin%20memesan:%0A${encodeURIComponent(pesan)}%0ATotal:%20Rp${total.toLocaleString('id-ID')}`;
-  // open WA in new tab and then clear cart
   window.open(waUrl, '_blank');
   cart = [];
   renderCart();
+  closePaymentModal();
 }
 
 function bukaWhatsApp() {
