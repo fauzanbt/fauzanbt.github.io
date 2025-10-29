@@ -92,11 +92,23 @@ function openPaymentModal(total) {
   // ensure radio defaults and hide address input initially
   const pickupRadio = document.querySelector('input[name="take-mode"][value="pickup"]');
   const deliveryRadio = document.querySelector('input[name="take-mode"][value="delivery"]');
-  if (pickupRadio) pickupRadio.checked = true;
   const addrWrap = document.getElementById('delivery-address-wrap');
-  if (addrWrap) addrWrap.style.display = 'none';
   const addrInput = document.getElementById('delivery-address');
+  
+  // Set default to pickup and hide address input
+  if (pickupRadio) pickupRadio.checked = true;
+  if (addrWrap) addrWrap.style.display = 'none';
   if (addrInput) addrInput.value = '';
+  
+  // Add event listeners to radio buttons
+  document.querySelectorAll('input[name="take-mode"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      if (addrWrap) {
+        addrWrap.style.display = e.target.value === 'delivery' ? 'block' : 'none';
+      }
+      updatePayAmountDisplay();
+    });
+  });
 
   // update display using helper
   updatePayAmountDisplay();
@@ -115,15 +127,37 @@ function closePaymentModal() {
   }
 }
 
+function validateOrder() {
+  const customerName = document.getElementById('customer-name')?.value || '';
+  const mode = document.querySelector('input[name="take-mode"]:checked')?.value || 'pickup';
+  const address = document.getElementById('delivery-address')?.value || '';
+
+  if (!customerName.trim()) {
+    alert('Mohon masukkan nama Anda');
+    return false;
+  }
+
+  if (mode === 'delivery' && !address.trim()) {
+    alert('Mohon masukkan alamat pengiriman');
+    return false;
+  }
+
+  return { customerName, mode, address };
+}
+
 function showQRIS() {
   const img = document.getElementById('qris-img');
   const preview = document.getElementById('qris-preview');
   if (!img || !preview) return;
 
-  // Save order first
-  const mode = document.querySelector('input[name="take-mode"]:checked')?.value || 'pickup';
-  const address = (mode === 'delivery') ? (document.getElementById('delivery-address')?.value || '') : '';
-  const orderId = saveOrder(cart, pendingTotal, mode, address, 'qris');
+  // Validate order details
+  const orderDetails = validateOrder();
+  if (!orderDetails) return;
+
+  // Save order with customer details
+  const { customerName, mode, address } = orderDetails;
+  const total = pendingTotal || cart.reduce((s, it) => s + Number(it.price || 0), 0);
+  const orderId = saveOrder(cart, total, mode, address, 'qris', customerName);
 
   // Attempt to load local file first (prefer qris.jpg); if missing generate EMV/QRIS payload and create QR.
   const localPath = 'img/qris.jpg';
@@ -249,7 +283,7 @@ function crc16_ccitt(str) {
 }
 
 // Save order to localStorage for admin panel
-function saveOrder(items, total, takeMode, address = '', paymentMethod = 'whatsapp') {
+function saveOrder(items, total, takeMode, address = '', paymentMethod = 'whatsapp', customerName = '') {
   // Get existing orders or initialize
   let orders = [];
   try {
@@ -262,6 +296,7 @@ function saveOrder(items, total, takeMode, address = '', paymentMethod = 'whatsa
   const order = {
     id: Date.now(), // use timestamp as ID
     date: new Date().toISOString(),
+    customerName: customerName,
     items: items.map(i => ({ name: i.name, price: i.price })),
     total: total,
     takeMode: takeMode,
@@ -281,22 +316,25 @@ function saveOrder(items, total, takeMode, address = '', paymentMethod = 'whatsa
 }
 
 function payWithWhatsApp() {
-  const total = pendingTotal || cart.reduce((s, it) => s + Number(it.price || 0), 0);
+  // Validate order details first
+  const orderDetails = validateOrder();
+  if (!orderDetails) return;
 
-  const mode = document.querySelector('input[name="take-mode"]:checked')?.value || 'pickup';
-  const address = (mode === 'delivery') ? (document.getElementById('delivery-address')?.value || '') : '';
+  const { customerName, mode, address } = orderDetails;
+  const total = pendingTotal || cart.reduce((s, it) => s + Number(it.price || 0), 0);
   
-  // Save order first
-  const orderId = saveOrder(cart, total, mode, address, 'whatsapp');
+  // Save order with customer details
+  const orderId = saveOrder(cart, total, mode, address, 'whatsapp', customerName);
 
   const lines = [];
   lines.push(`Halo saya ingin memesan (Order #${orderId}):`);
+  lines.push(`Nama: ${customerName}`);
   cart.forEach(i => lines.push(`${i.name} (Rp${Number(i.price).toLocaleString('id-ID')})`));
   lines.push(`Total: Rp${Number(total).toLocaleString('id-ID')}`);
 
   if (mode === 'delivery') {
     lines.push('Metode: Delivery');
-    if (address) lines.push(`Alamat: ${address}`);
+    lines.push(`Alamat: ${address}`);
   } else {
     lines.push('Metode: Ambil di Tempat');
   }

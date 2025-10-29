@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tani Nusantara - Dari Petani Untuk Negeri</title>
+    <link rel="stylesheet" href="tani-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-seedling"></i>
+            <span>Tani Nusantara</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#beranda">Beranda</a></li>
+            <li><a href="#hasil-produk">Hasil Produk</a></li>
+            <li><a href="#petani">Petani Kami</a></li>
+            <li><a href="#kontak">Kontak</a></li>
+        </ul>
+        <button class="mobile-menu" aria-label="Menu">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="beranda" class="hero">
+        <div class="hero-content">
+            <h1>Dari Ladang ke Meja Anda</h1>
+            <p class="tagline">Mendukung Petani Lokal, Menghadirkan Kesegaran Alami</p>
+            <div class="trust-badges">
+                <div class="badge">
+                    <i class="fas fa-check-circle"></i>
+                    <span>100% Langsung dari Petani</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-leaf"></i>
+                    <span>Hasil Tani Organik</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-truck"></i>
+                    <span>Pengiriman Fresh</span>
+                </div>
+            </div>
+            <a href="#produk" class="cta-button">Lihat Produk Kami</a>
+        </div>
+    </section>
+
+    <!-- Hasil Produk -->
+    <section id="hasil-produk" class="products">
+        <h2>Hasil Produk Petani</h2>
+        <div class="category-tabs">
+            <button class="tab-btn active" data-category="semua">Semua</button>
+            <button class="tab-btn" data-category="sayuran">Sayuran</button>
+            <button class="tab-btn" data-category="buah">Buah-buahan</button>
+            <button class="tab-btn" data-category="beras">Beras & Umbi</button>
+        </div>
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="https://source.unsplash.com/400x300/?rice" alt="Beras Organik Premium">
+                <h3>Beras Organik Premium</h3>
+                <p class="farmer">Petani: Pak Suparman</p>
+                <p class="description">Beras organik berkualitas tinggi, ditanam dengan metode tradisional tanpa pestisida.</p>
+                <p class="price">Rp 15.000/kg</p>
+                <button onclick="orderProduct('Beras Organik Premium')">Pesan Sekarang</button>
+            </div>
+            <div class="product-card">
+                <img src="https://source.unsplash.com/400x300/?vegetables" alt="Sayur Organik Box">
+                <h3>Sayur Organik Box</h3>
+                <p class="farmer">Petani: Bu Aminah</p>
+                <p class="description">Paket sayuran segar organik, dipetik langsung dari kebun kami.</p>
+                <p class="price">Rp 50.000/box</p>
+                <button onclick="orderProduct('Sayur Organik Box')">Pesan Sekarang</button>
+            </div>
+            <div class="product-card">
+                <img src="https://source.unsplash.com/400x300/?tropical-fruits" alt="Buah Lokal Segar">
+                <h3>Buah Lokal Segar</h3>
+                <p class="farmer">Petani: Pak Rahman</p>
+                <p class="description">Buah-buahan lokal segar langsung dari kebun petani.</p>
+                <p class="price">Rp 35.000/kg</p>
+                <button onclick="orderProduct('Buah Lokal Segar')">Pesan Sekarang</button>
+            </div>
+            <div class="product-card">
+                <img src="https://source.unsplash.com/400x300/?potato" alt="Kentang Dieng">
+                <h3>Kentang Dieng</h3>
+                <p class="farmer">Petani: Pak Yusuf</p>
+                <p class="description">Kentang segar dari dataran tinggi Dieng.</p>
+                <p class="price">Rp 12.000/kg</p>
+                <button onclick="orderProduct('Kentang Dieng')">Pesan Sekarang</button>
+            </div>
+            <div class="product-card">
+                <img src="https://source.unsplash.com/400x300/?cherry-tomatoes" alt="Tomat Cherry Organik">
+                <h3>Tomat Cherry Organik</h3>
+                <p class="farmer">Petani: Bu Aminah</p>
+                <p class="description">Tomat cherry manis, cocok untuk salad.</p>
+                <p class="price">Rp 25.000/250g</p>
+                <button onclick="orderProduct('Tomat Cherry Organik')">Pesan Sekarang</button>
+            </div>
+            <div class="product-card">
+                <img src="https://source.unsplash.com/400x300/?mango" alt="Mangga Harum Manis">
+                <h3>Mangga Harum Manis</h3>
+                <p class="farmer">Petani: Pak Rahman</p>
+                <p class="description">Mangga manis segar langsung dari pohon.</p>
+                <p class="price">Rp 45.000/kg</p>
+                <button onclick="orderProduct('Mangga Harum Manis')">Pesan Sekarang</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Farmer Profiles -->
+    <section id="petani" class="farmers">
+        <h2>Bertemu dengan Petani Kami</h2>
+        <div class="farmer-stories">
+            <div class="farmer-card">
+                <img src="https://source.unsplash.com/400x300/?farmer" alt="Pak Suparman">
+                <h3>Pak Suparman</h3>
+                <p class="specialty">Spesialisasi: Beras Organik</p>
+                <p class="experience">Pengalaman: 20 tahun</p>
+                <p class="story">Telah bertani secara organik selama 20 tahun, menggunakan metode tradisional yang ramah lingkungan.</p>
+            </div>
+            <div class="farmer-card">
+                <img src="https://source.unsplash.com/400x300/?farming-woman" alt="Bu Aminah">
+                <h3>Bu Aminah</h3>
+                <p class="specialty">Spesialisasi: Sayuran Organik</p>
+                <p class="experience">Pengalaman: 15 tahun</p>
+                <p class="story">Mengembangkan kebun sayur organik dengan sistem pertanian berkelanjutan.</p>
+            </div>
+            <div class="farmer-card">
+                <img src="https://source.unsplash.com/400x300/?fruit-farmer" alt="Pak Rahman">
+                <h3>Pak Rahman</h3>
+                <p class="specialty">Spesialisasi: Buah-buahan</p>
+                <p class="experience">Pengalaman: 25 tahun</p>
+                <p class="story">Spesialis dalam budidaya buah lokal dengan teknik ramah lingkungan.</p>
+            </div>
+            <div class="farmer-card">
+                <img src="https://source.unsplash.com/400x300/?farmer-field" alt="Pak Yusuf">
+                <h3>Pak Yusuf</h3>
+                <p class="specialty">Spesialisasi: Umbi-umbian</p>
+                <p class="experience">Pengalaman: 18 tahun</p>
+                <p class="story">Ahli dalam budidaya kentang dan umbi-umbian di dataran tinggi dengan metode organik.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="kontak" class="contact">
+        <h2>Hubungi Kami</h2>
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Kontak Langsung</h3>
+                <p><i class="fab fa-whatsapp"></i> WhatsApp: +62 812-3456-7890</p>
+                <p><i class="fas fa-envelope"></i> Email: info@taninusantara.id</p>
+                <p><i class="fas fa-map-marker-alt"></i> Alamat: Jl. Pertanian No. 123, Indonesia</p>
+            </div>
+            <form class="contact-form">
+                <h3>Kirim Pesan</h3>
+                <input type="text" placeholder="Nama Anda" required>
+                <input type="email" placeholder="Email" required>
+                <textarea placeholder="Pesan Anda" required></textarea>
+                <button type="submit" class="submit-button">Kirim Pesan</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team">
+        <h2>Tim Kami</h2>
+        <div class="team-list">
+            <div class="team-item"><span class="name">ANERSA BRILIANT ATHAYAZAIN</span><span class="id">2510631200043</span></div>
+            <div class="team-item"><span class="name">FAUZAN BADRUT TAMAM</span><span class="id">2510631200113</span></div>
+            <div class="team-item"><span class="name">MUHAMMAD ANANDA RIZQI RAMADHAN</span><span class="id">2510631200121</span></div>
+            <div class="team-item"><span class="name">MUHAMAD NAUFAL ADZ'DZAKY</span><span class="id">2510631200140</span></div>
+            <div class="team-item"><span class="name">USI SULASTRI</span><span class="id">2510631200093</span></div>
+            <div class="team-item"><span class="name">VARISA ANASTASYA PUTRI INDRA K.</span><span class="id">2510631200094</span></div>
+            <div class="team-item"><span class="name">VEGA SIDIK RAMADHAN</span><span class="id">2510631200137</span></div>
+            <div class="team-item"><span class="name">WAFIQ AZIZAH</span><span class="id">2510631200138</span></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Tani Nusantara</h3>
+                <p>Menghubungkan petani dan konsumen untuk hasil tani terbaik.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Ikuti Kami</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Tani Nusantara. Semua hak dilindungi.</p>
+        </div>
+    </footer>
+
+    <script src="tani-script.js"></script>
+</body>
+</html>

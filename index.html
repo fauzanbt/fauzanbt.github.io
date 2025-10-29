@@ -58,7 +58,7 @@
     </div>
 
     <div class="keranjang">
-      <h3>🛒 Keranjang Belanja</h3>
+      <h3>Keranjang Belanja</h3>
       <ul id="keranjang-list"></ul>
       <p id="total">Total: Rp0</p>
       <button class="checkout-btn" onclick="checkout()">Checkout</button>
@@ -107,8 +107,15 @@
       <button class="modal-close" aria-label="Close" onclick="closePaymentModal()">✕</button>
       <h3 id="pay-title">Pilih Metode Pembayaran</h3>
       <p id="pay-amount"> </p>
+      <div class="customer-info" style="margin:8px 0;">
+        <label style="display:block;font-weight:600;margin-bottom:6px;">Nama Pemesan:</label>
+        <input id="customer-name" type="text" 
+               placeholder="Masukkan nama Anda"
+               style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;margin-bottom:12px;" 
+               required />
+      </div>
       <div class="payment-methods" style="margin:8px 0;">
-  <label style="display:block;font-weight:600;margin-bottom:6px;">Metode Pengambilan:</label>
+        <label style="display:block;font-weight:600;margin-bottom:6px;">Metode Pengambilan:</label>
   <label><input type="radio" name="take-mode" value="pickup" checked> Ambil di Tempat</label>
   <label style="margin-left:12px;"><input type="radio" name="take-mode" value="delivery"> Delivery</label>
 

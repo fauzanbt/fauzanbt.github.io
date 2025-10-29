@@ -83,19 +83,25 @@ function renderOrderRow(order) {
     total,
     takeMode,
     address,
-    status
+    status,
+    customerName,
+    paymentMethod
   } = order;
 
   const itemsList = items.map(i => `${i.name} (${formatRupiah(i.price)})`).join('<br>');
   const pickup = takeMode === 'delivery' 
-    ? `Delivery ke:<br>${address}` 
+    ? `Delivery ke:<br><strong>${address}</strong>` 
     : 'Ambil di tempat';
+  
+  const paymentLabel = paymentMethod === 'qris' ? 'QRIS' : 'WhatsApp';
 
   return `
     <tr data-id="${id}">
       <td>${formatDate(date)}</td>
+      <td><strong>${customerName || '-'}</strong></td>
       <td>${itemsList}</td>
       <td>${formatRupiah(total)}</td>
+      <td>${paymentLabel}</td>
       <td>${pickup}</td>
       <td>${renderStatusBadge(status)}</td>
       <td>${renderActionButtons(order)}</td>
